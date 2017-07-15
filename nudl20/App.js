@@ -161,8 +161,14 @@ class MealScreen extends React.Component {
     })
     .then((response) => response.json())
     .then((responseJson) => {
+      const rsvp = () => {
+        if (responseJson.response.attendees.length ==> 0) {
+          return true
+        }
+      }
       this.setState({
-        meal: responseJson.response
+        meal: responseJson.response,
+        rsvp: rsvp
       });
     });
   }
@@ -198,7 +204,7 @@ class MealScreen extends React.Component {
         <Text>{this.state.meal.time}</Text>
         <Text>{this.state.meal.location}</Text>
         <TouchableOpacity onPress={this.pressRSVP.bind(this)}>
-          <Text>RSVP</Text>
+          {rsvp ? <Text style={{backgroundColor: 'red'}}>Un-RSVP</Text> : <Text style={{backgroundColor: 'green'}>RSVP</Text>}
         </TouchableOpacity>
       </View>
     );
