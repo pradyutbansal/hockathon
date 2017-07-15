@@ -19,7 +19,7 @@ class MealListScreen extends React.Component {
     }
   }
 
-  componentWillMount () {
+  componentDidMount () {
     // console.log(this.state.datasource)
     fetch('https://breadstick.herokuapp.com/api/meals', {
       method: 'GET',
@@ -154,7 +154,7 @@ class MealScreen extends React.Component {
       meal: {}
     }
   }
-  componentWillMount() {
+  componentDidMount() {
     const { params } = this.props.navigation.state
     fetch('https://breadstick.herokuapp.com/api/meals/' + params.meal._id, {
       method: 'GET',
