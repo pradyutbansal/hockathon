@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity, AsyncStorage, RefreshControl } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 // import { } from '@shoutem/ui';
-
+import { List, ListItem} from 'react-native-elements';
 const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 // Screens
 class MealListScreen extends React.Component {
@@ -58,46 +58,92 @@ this.fetchData().then((stuff) => {
   this.setState({refreshing: false});
 });
 }
-
-
-  render() {
-    const { navigate } = this.props.navigation;
-    return (
-      <View style={styles.container}>
-        <View>
-          <Text>SEARCH GOES HERE</Text>
-          <TouchableOpacity onPress={() => navigate('CreateMeal')}>
-            <Text>Host meal</Text>
-          </TouchableOpacity>
-        </View>
-        <ListView
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh.bind(this)}
-            />
-          }
-          dataSource={this.state.dataSource}
-          renderRow={(rowData) => <View>
-            <View><Text>DATE THINGY{rowData.date}</Text></View>
-            <TouchableOpacity
-              onPress={() => navigate('Meal', {meal: rowData})}
-              onLongPress={this.longTouchMeal.bind(this,rowData)}
-              delayLongPress={2000}
-            >
-              <View>
-                <Text>{rowData.time}</Text>
-                <Text>{rowData.title}</Text>
-                <Text>{rowData.host}</Text>
-                {rowData.capacity === rowData.numberOfGoing? <Text>Full</Text> : <Text>Not Full</Text>}
-              </View>
-            </TouchableOpacity>
-          </View>}
-        />
-      </View>
-    );
-  }
+renderRow(rowData, sectionID){
+  const { navigate } = this.props.navigation;
+  return (
+    // <TouchableOpacity
+    //   onPress={() => navigate('Meal', {meal: rowData})}
+    //   // onLongPress={this.longTouchMeal.bind(this,rowData)}
+    //   // delayLongPress={2000}
+    // >
+    <ListItem
+      mediumAvatar
+      title = {rowData.title}
+      subtitle = {rowData.host}
+      avatar = {{title:rowData.time}}
+      onPressRightIcon={() => navigate('Meal', {meal: rowData})}
+    />
+  // </TouchableOpacity>
+  )
 }
+
+render() {
+const { navigate } = this.props.navigation;
+  console.log(this.state.mealList)
+  return (
+    <View>
+      <View><Text>SEARCH GOES HERE</Text></View>
+      <TouchableOpacity onPress={() => navigate('CreateMeal')}>
+                 <Text>Host meal</Text>
+               </TouchableOpacity>
+      <List>
+        <ListView
+          renderRow = {this.renderRow.bind(this)}
+          dataSource = {this.state.dataSource}
+          refreshControl={
+                    <RefreshControl
+                      refreshing={this.state.refreshing}
+                      onRefresh={this._onRefresh.bind(this)}
+                    />
+                  }
+        />
+      </List>
+
+    </View>
+  );
+}
+}
+
+
+
+  // render() {
+  //   const { navigate } = this.props.navigation;
+  //   return (
+  //     <View style={styles.container}>
+  //       <View>
+  //         <Text>SEARCH GOES HERE</Text>
+  //         <TouchableOpacity onPress={() => navigate('CreateMeal')}>
+  //           <Text>Host meal</Text>
+  //         </TouchableOpacity>
+  //       </View>
+  //       <ListView
+  //         refreshControl={
+  //           <RefreshControl
+  //             refreshing={this.state.refreshing}
+  //             onRefresh={this._onRefresh.bind(this)}
+  //           />
+  //         }
+  //         dataSource={this.state.dataSource}
+  //         renderRow={(rowData) => <View>
+  //           <View><Text>DATE THINGY{rowData.date}</Text></View>
+  //           <TouchableOpacity
+  //             onPress={() => navigate('Meal', {meal: rowData})}
+  //             onLongPress={this.longTouchMeal.bind(this,rowData)}
+  //             delayLongPress={2000}
+  //           >
+  //             <View>
+  //               <Text>{rowData.time}</Text>
+  //               <Text>{rowData.title}</Text>
+  //               <Text>{rowData.host}</Text>
+  //               {rowData.capacity === rowData.numberOfGoing? <Text>Full</Text> : <Text>Not Full</Text>}
+  //             </View>
+  //           </TouchableOpacity>
+  //         </View>}
+  //       />
+  //     </View>
+  //   );
+  // }
+// }
 
 class MealScreen extends React.Component {
   constructor(props) {
