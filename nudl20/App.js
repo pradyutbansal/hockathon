@@ -167,6 +167,25 @@ class MealScreen extends React.Component {
     });
   }
 
+  pressRSVP () {
+    const { params } = this.props.navigation.state
+    const { goBack } = this.props.navigation;
+    fetch('https://breadstick.herokuapp.com/api/meals/rsvp/' + params.meal._id + '?userId=596a00721467be0011b3f376', {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+    })
+    .then((response) => response.json())
+    .then((responseJson) => {
+      console.log("meal created!")
+      this.props.navigation.goBack()
+    })
+    .catch((err) => {
+      console.log("unable to create meal", err)
+    });
+  }
+
   render() {
     return (
       <View>
@@ -178,7 +197,7 @@ class MealScreen extends React.Component {
         <Text>{this.state.meal.description}</Text>
         <Text>{this.state.meal.time}</Text>
         <Text>{this.state.meal.location}</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={this.pressRSVP.bind(this)}>
           <Text>RSVP</Text>
         </TouchableOpacity>
       </View>
