@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity,
 import { StackNavigator } from 'react-navigation';
 import { List, ListItem, FormLabel, FormInput, CheckBox} from 'react-native-elements';
 
+
 const ds = new ListView.DataSource({
   rowHasChanged: (r1, r2) => r1 !== r2,
   sectionHeaderHasChanged: (s1,s2) => s1 != s2
@@ -147,17 +148,29 @@ class MealScreen extends React.Component {
     })
     .then((response) => response.json())
     .then((responseJson) => {
+      const meal = responseJson.response
       this.setState({
-        meal: responseJson.response
+        meal: {
+          title: meal.title,
+          price: meal.price,
+          host: meal.host.name,
+          time: meal.time,
+          location: meal.location,
+          description: meal.description,
+        }
       });
     });
   }
 
   render() {
     return (
-      <View>
-        <Text>{this.state.meal.title}</Text>
+      <View style = {ayStyles.container}>
+      <View style = {lineStyles.container}>
+        <Text>{this.state.meal.title + " "}</Text>
+        <View style = {leftStyles.container}>
         <Text>{this.state.meal.price}</Text>
+        </View>
+        </View>
         <TouchableOpacity>
           <Text>{this.state.meal.host}</Text>
         </TouchableOpacity>
@@ -308,5 +321,30 @@ const searchStyles = StyleSheet.create({
   checkbox: {
     display: 'flex',
     flexDirection: 'row'
+  }
+});
+
+const lineStyles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    backgroundColor: '#d35400',
+    opacity: .7,
+    marginBottom: 10,
+  }
+});
+
+const ayStyles = StyleSheet.create({
+  container: {
+    backgroundColor: '#d35400',
+    opacity: .7,
+    marginBottom: 5,
+    fontSize: 50,
+    // fontFamily: "San Francisco"
+  }
+});
+
+const leftStyles = StyleSheet.create({
+  container: {
+   marginLeft: 'auto'
   }
 });
