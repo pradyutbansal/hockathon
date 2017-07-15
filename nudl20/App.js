@@ -186,7 +186,7 @@ class CreateMealScreen extends React.Component {
     .then((response) => response.json())
     .then((responseJson) => {
       console.log("meal created!")
-      //  this.props.navigation.goBack()
+      this.props.navigation.goBack()
     })
     .catch((err) => {
       console.log("unable to create meal")
