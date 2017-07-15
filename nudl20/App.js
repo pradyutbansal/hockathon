@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity, AsyncStorage, RefreshControl } from 'react-native';
+import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity,
+        AsyncStorage, RefreshControl, ScrollView, Image } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 // import { } from '@shoutem/ui';
 import { List, ListItem, FormLabel, FormInput, CheckBox} from 'react-native-elements';
@@ -9,7 +10,8 @@ class MealListScreen extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      dataSource: ds.cloneWithRows([])
+      dataSource: ds.cloneWithRows([]),
+      refreshing:false
     }
   }
 
@@ -66,6 +68,7 @@ class MealListScreen extends React.Component {
       //   // onLongPress={this.longTouchMeal.bind(this,rowData)}
       //   // delayLongPress={2000}
       // >
+      <View>
       <ListItem
         mediumAvatar
         title = {rowData.title}
@@ -73,19 +76,20 @@ class MealListScreen extends React.Component {
         avatar = {{title:rowData.time}}
         onPressRightIcon={() => navigate('Meal', {meal: rowData})}
       />
+    </View>
       // </TouchableOpacity>
     )
   }
 
   render() {
     const { navigate } = this.props.navigation;
-    console.log(this.state.mealList)
     return (
-      <View>
-        <View><Text>SEARCH GOES HERE</Text></View>
+      <View style={styles.container}>
+        <View><Text>SEARCH GOES HERE</Text>
         <TouchableOpacity onPress={() => navigate('CreateMeal')}>
           <Text>Host meal</Text>
         </TouchableOpacity>
+      </View>
         <List>
           <ListView
             renderRow = {this.renderRow.bind(this)}
@@ -98,7 +102,6 @@ class MealListScreen extends React.Component {
             }
           />
         </List>
-
       </View>
     );
   }
@@ -159,7 +162,7 @@ class CreateMealScreen extends React.Component {
   }
 
   createMeal() {
-    fetch('https://breadstick.herokuapp.com/api/meals/register/59695b7ff36d28739db80c57', {
+    fetch('https://breadstick.herokuapp.com/api/meals/59695b7ff36d28739db80c57', {
       method: 'POST',
       body: JSON.stringify({
         title: this.state.title,
@@ -183,6 +186,7 @@ class CreateMealScreen extends React.Component {
 
   render() {
     return (
+      <ScrollView>
       <View>
         <Text>Host a Meal</Text>
         <FormLabel>Title </FormLabel>
@@ -206,11 +210,29 @@ class CreateMealScreen extends React.Component {
           <CheckBox
             title='Dairy Free'
           />
-        </View>
+      </View>
+    <View style={styles.checkbox}>
+      <CheckBox
+        title='Gluten Free'
+      />
+      <CheckBox
+        title='Vegan'
+      />
+    </View>
+      <View style={styles.checkbox}>
+        <CheckBox
+          title='Vegetarian'
+        />
+      </View>
         <TouchableOpacity onPress={this.createMeal.bind(this)}>
-          <Text>Sign em up!</Text>
+          <Image
+          source={require('./img/nudl2logo-trans.png')}
+          style={{width:'30%', height:'30%',display:'flex', alignItems:'center', justifyContent:'center'}} >
+          <View style={styles.headline}><Text style={{fontSize: 14}}>Sign em up!</Text></View>
+        </Image>
         </TouchableOpacity>
       </View>
+      </ScrollView>
     );
   }
 }
@@ -230,9 +252,33 @@ export default StackNavigator({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#d35400',
+    height:'100%',
+
+    // alignItems: 'center',
+    // justifyContent: 'center',
+  },
+  checkbox: {
+    display: 'flex',
+    flexDirection: 'row'
+  },
+  headline: {
+    display: 'flex',
+    flex:1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0)',
+  }
+});
+
+const searchStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#d35400',
+    opacity: .7,
+    marginBottom: 10
+    // alignItems: 'center',
+    // justifyContent: 'center',
   },
   checkbox: {
     display: 'flex',
