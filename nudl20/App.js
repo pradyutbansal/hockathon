@@ -63,8 +63,21 @@ class MealListScreen extends React.Component {
       .then((response) => response.json())
       .then((responseJson) => {
         res(responseJson)
+        console.log("responseJson",responseJson.response)
+        mealCategoryMap = {}
+        const convertMealArrayToMap = responseJson.response.map((meal) => {
+          if (!mealCategoryMap[meal.date]) {
+            mealCategoryMap[meal.date] = []
+          }
+          mealCategoryMap[meal.date].push(meal)
+        })
+        return mealCategoryMap
+      })
+      .then((mealCategoryMap) => {
+        console.log('data source', ds);
+        console.log("mealCategoryMap", mealCategoryMap)
         this.setState({
-          dataSource: ds.cloneWithRows(responseJson.response)
+          dataSource: ds.cloneWithRowsAndSections(mealCategoryMap)
         });
       })
       .catch((err)=>{
@@ -100,6 +113,7 @@ class MealListScreen extends React.Component {
   }
 
   renderSectionHeader(sectionData, date) {
+    console.log("DATE", date)
     return (
       <Text>{date}</Text>
     )
