@@ -2,27 +2,39 @@ import React from 'react';
 import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity,
         AsyncStorage, RefreshControl, ScrollView, Image } from 'react-native';
 import { StackNavigator } from 'react-navigation';
-// import { } from '@shoutem/ui';
 import { List, ListItem, FormLabel, FormInput, CheckBox} from 'react-native-elements';
-const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+
+const ds = new ListView.DataSource({
+  rowHasChanged: (r1, r2) => r1 !== r2,
+  sectionHeaderHasChanged: (s1,s2) => s1 != s2
+});
+
 // Screens
 class MealListScreen extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      dataSource: ds.cloneWithRows([]),
+      dataSource: ds.cloneWithRowsAndSections([]),
       refreshing:false
     }
   }
 
   componentWillMount () {
+    console.log(this.state.datasource)
     fetch('https://breadstick.herokuapp.com/api/meals', {
       method: 'GET',
     })
     .then((response) => response.json())
     .then((responseJson) => {
+      mealCategoryMap = {}
+      const convertMealArrayToMap = responseJson.response.map((meal) => {
+        if (!mealCategoryMap[meal.date]) {
+          mealCategoryMap[meal.date] = []
+        }
+        mealCategoryMap[meal.category].push(meal)
+      })
       this.setState({
-        dataSource: ds.cloneWithRows(responseJson.response)
+        dataSource: ds.cloneWithRowsAndSections(convertMealArrayToMap)
       });
     });
   }
@@ -162,7 +174,7 @@ class CreateMealScreen extends React.Component {
   }
 
   createMeal() {
-    fetch('https://breadstick.herokuapp.com/api/meals/59695b7ff36d28739db80c57', {
+    fetch('https://breadstick.herokuapp.com/api/meals/register?hostId=59695b7ff36d28739db80c57', {
       method: 'POST',
       body: JSON.stringify({
         title: this.state.title,
@@ -227,7 +239,7 @@ class CreateMealScreen extends React.Component {
         <TouchableOpacity onPress={this.createMeal.bind(this)}>
           <Image
           source={require('./img/nudl2logo-trans.png')}
-          style={{width:'30%', height:'30%',display:'flex', alignItems:'center', justifyContent:'center'}} >
+          style={{width:110, height:90,display:'flex', alignItems:'center', justifyContent:'center'}} >
           <View style={styles.headline}><Text style={{fontSize: 14}}>Sign em up!</Text></View>
         </Image>
         </TouchableOpacity>
