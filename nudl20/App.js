@@ -2,8 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity,
         AsyncStorage, RefreshControl, ScrollView, Image } from 'react-native';
 import { StackNavigator } from 'react-navigation';
-import { List, ListItem, FormLabel, FormInput, CheckBox} from 'react-native-elements';
-
+import { List, ListItem, FormLabel, FormInput, CheckBox, Icon} from 'react-native-elements';
 
 const ds = new ListView.DataSource({
   rowHasChanged: (r1, r2) => r1 !== r2,
@@ -178,26 +177,41 @@ class MealScreen extends React.Component {
 
   render() {
     return (
-      <View style = {ayStyles.container}>
-      <View style = {lineStyles.container}>
-        <Text>{this.state.meal.title + " "}</Text>
-        <View style = {leftStyles.container}>
-        <Text>{this.state.meal.price}</Text>
-        </View>
-        </View>
+      <View style= {everything.container}>
+          <View style = {lineStyles.container}>
+              <Text>{this.state.meal.title + " "}</Text>
+              <Text style = {{marginLeft: 'auto'}}>{"$" + this.state.meal.price}</Text>
+            </View>
         <TouchableOpacity>
-          <Text>{this.state.meal.host}</Text>
+
+<View style={{flexDirection:'row', flexWrap:'wrap'}}>
+        <Icon
+name='face' />
+              <Text> {this.state.meal.host}</Text>
+</View>
         </TouchableOpacity>
-        <Text>{this.state.meal.description}</Text>
-        <Text>{this.state.meal.time}</Text>
-        <Text>{this.state.meal.location}</Text>
+<View style={{flexDirection:'row', flexWrap:'wrap'}}>
+        <Icon
+name='feedback'/>
+              <Text> {this.state.meal.description}</Text>
+</View>
+<View style={{flexDirection:'row', flexWrap:'wrap'}}>
+              <Icon
+    name='query-builder' />
+              <Text> {this.state.meal.time}</Text>
+</View>
+<View style={{flexDirection:'row', flexWrap:'wrap'}}>
+              <Icon
+              name='home'/>
+              <Text> {this.state.meal.location}</Text>
+</View>
         <TouchableOpacity>
-          <Text>RSVP</Text>
+              <Text> RSVP</Text>
         </TouchableOpacity>
-      </View>
+    </View>
     );
   }
-}
+} //<meal screen closer
 
 class CreateMealScreen extends React.Component {
   constructor(props) {
@@ -351,18 +365,15 @@ const lineStyles = StyleSheet.create({
   }
 });
 
-const ayStyles = StyleSheet.create({
+const everything = StyleSheet.create({
   container: {
-    backgroundColor: '#d35400',
+    backgroundColor:'#d35400',
     opacity: .7,
-    marginBottom: 5,
     fontSize: 50,
+    paddingTop: '10%',
+    paddingLeft: 30,
+    paddingRight:30,
+    paddingBottom: '100%'
     // fontFamily: "San Francisco"
   }
-});
-
-const leftStyles = StyleSheet.create({
-  container: {
-   marginLeft: 'auto'
-  }
-});
+})
