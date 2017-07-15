@@ -201,7 +201,8 @@ class CreateMealScreen extends React.Component {
   }
 
   createMeal() {
-    fetch('https://breadstick.herokuapp.com/api/meals/register?hostId=59695b7ff36d28739db80c57', {
+    const { goBack } = this.props.navigation;
+    fetch('https://breadstick.herokuapp.com/api/meals/register?hostId=5969792c3de5190d9940ce16', {
       method: 'POST',
       headers: {
         "Content-Type": "application/json"
