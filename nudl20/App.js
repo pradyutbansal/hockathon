@@ -20,7 +20,7 @@ class MealListScreen extends React.Component {
     }
   }
 
-  componentWillMount () {
+  componentDidMount () {
     // console.log(this.state.datasource)
     fetch('https://breadstick.herokuapp.com/api/meals', {
       method: 'GET',
@@ -64,8 +64,21 @@ class MealListScreen extends React.Component {
       .then((response) => response.json())
       .then((responseJson) => {
         res(responseJson)
+        console.log("responseJson",responseJson.response)
+        mealCategoryMap = {}
+        const convertMealArrayToMap = responseJson.response.map((meal) => {
+          if (!mealCategoryMap[meal.date]) {
+            mealCategoryMap[meal.date] = []
+          }
+          mealCategoryMap[meal.date].push(meal)
+        })
+        return mealCategoryMap
+      })
+      .then((mealCategoryMap) => {
+        console.log('data source', ds);
+        console.log("mealCategoryMap", mealCategoryMap)
         this.setState({
-          dataSource: ds.cloneWithRows(responseJson.response)
+          dataSource: ds.cloneWithRowsAndSections(mealCategoryMap)
         });
       })
       .catch((err)=>{
@@ -101,6 +114,7 @@ class MealListScreen extends React.Component {
   }
 
   renderSectionHeader(sectionData, date) {
+    console.log("DATE", date)
     return (
       <Text>{date}</Text>
     )
@@ -141,7 +155,7 @@ class MealScreen extends React.Component {
       meal: {}
     }
   }
-  componentWillMount() {
+  componentDidMount() {
     const { params } = this.props.navigation.state
     fetch('https://breadstick.herokuapp.com/api/meals/' + params.meal._id, {
       method: 'GET',
@@ -200,8 +214,12 @@ class CreateMealScreen extends React.Component {
   }
 
   createMeal() {
-    fetch('https://breadstick.herokuapp.com/api/meals/register?hostId=59695b7ff36d28739db80c57', {
+    const { goBack } = this.props.navigation;
+    fetch('https://breadstick.herokuapp.com/api/meals/register?hostId=5969792c3de5190d9940ce16', {
       method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
         title: this.state.title,
         description: this.state.description,
@@ -215,10 +233,10 @@ class CreateMealScreen extends React.Component {
     .then((response) => response.json())
     .then((responseJson) => {
       console.log("meal created!")
-      //  this.props.navigation.goBack()
+      this.props.navigation.goBack()
     })
     .catch((err) => {
-      console.log("unable to create meal")
+      console.log("unable to create meal", err)
     });
   }
 
