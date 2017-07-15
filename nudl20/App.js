@@ -4,37 +4,32 @@ import Swiper from 'react-native-swiper';
 import { StackNavigator } from 'react-navigation';
 // import { } from '@shoutem/ui';
 
+const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 // Screens
 class MealListScreen extends React.Component {
   constructor(props) {
     super(props)
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       dataSource: ds.cloneWithRows([])
     }
-    console.log("this")
-
   }
 
   componentWillMount () {
-    fetch('https://breadstick.herokuapp.com/api/meals')
+    fetch('https://breadstick.herokuapp.com/api/meals', {
+      method: 'GET',
+    })
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log(responseJson)
+        console.log("here2", responseJson.response)
         this.setState({
-          dataSource: ds.cloneWithRows(responseJson.meals)
+          dataSource: ds.cloneWithRows(responseJson.response)
         });
       });
   }
 
-
-
   longTouchMeal(meal) {
     fetch('https://breadstick.herokuapp.com/api/meals', {
         method: 'POST',
-        headers: {
-          "Content-Type": "application/json"
-        },
       })
       .then((response) => response.json())
       .then((responseJson) => {
@@ -44,6 +39,7 @@ class MealListScreen extends React.Component {
 
 
   render() {
+    const { navigate } = this.props.navigation;
     return (
       <View style={styles.container}>
         <View><Text>SEARCH GOES HERE</Text></View>
@@ -74,19 +70,16 @@ class MealScreen extends React.Component {
   constructor(props) {
     super(props)
   }
-  componentDidMount() {
+  componentWillMount() {
     const { params } = this.props.navigation.state
-    console.log(params.meal)
+    console.log("HIIII",params.meal)
     fetch('https://breadstick.herokuapp.com/api/meals/' + params.meal._id, {
         method: 'GET',
-        headers: {
-          "Content-Type": "application/json"
-        },
       })
       .then((response) => response.json())
       .then((responseJson) => {
         this.setState({
-          meal: responseJson.meal
+          meal: responseJson.response
         });
       });
   }
@@ -102,7 +95,6 @@ class MealScreen extends React.Component {
         <Text>{this.state.meal.description}</Text>
         <Text>{this.state.meal.time}</Text>
         <Text>{this.state.meal.address}</Text>
-        <Text>{this.state.meal.dietary}</Text>
         <TouchableOpacity>
           <Text>RSVP</Text>
         </TouchableOpacity>
@@ -114,22 +106,19 @@ class MealScreen extends React.Component {
 class CreateMealScreen extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
-      title: null,
-      description: null,
-      date: null,
-      time: null,
-      price: null,
-      capacity: null,
-    }
+    // this.state = {
+    //   title: null,
+    //   description: null,
+    //   date: null,
+    //   time: null,
+    //   price: null,
+    //   capacity: null,
+    // }
   }
 
   createMeal() {
     fetch('https://breadstick.herokuapp.com/api/meals/register/59695b7ff36d28739db80c57', {
       method: 'POST',
-      headers: {
-        "Content-Type": "application/json"
-      },
       body: JSON.stringify({
         title: this.state.title,
         description: this.state.description,
