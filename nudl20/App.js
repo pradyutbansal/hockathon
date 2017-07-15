@@ -242,21 +242,27 @@ class CreateMealScreen extends React.Component {
         <FormInput onChangeText={(text) => this.setState({price: text})} />
         <FormLabel>Capacity </FormLabel>
         <FormInput onChangeText={(text) => this.setState({capacity: text})} />
-        <View style={styles.checkbox}>
+        <View style={searchStyles.checkbox}>
           <CheckBox
             title='Contains Nuts'
+            style={{padding:4, marginTop:7, marginLeft:5}}
           />
           <CheckBox
             title='Dairy Free'
+            style={{padding:2, marginTop:9, marginLeft:3}}
+          />
+
+          <CheckBox
+            title='Vegan'
+            style={{padding:2, marginTop:9, marginLeft:3}}
           />
           <CheckBox
             title='Gluten Free'
-          />
-          <CheckBox
-            title='Vegan'
+            style={{padding:2, marginTop:9, marginLeft:8}}
           />
           <CheckBox
             title='Vegetarian'
+            style={{padding:2, marginTop:9, marginLeft:5, marginRight:6}}
           />
       </View>
       <View style={{display:'flex', alignItems:'center', justifyContent:'center'}} >
@@ -318,10 +324,9 @@ const searchStyles = StyleSheet.create({
     // justifyContent: 'center',
   },
   checkbox: {
-    display: 'flex',
+    flex:1,
     flexDirection: 'row',
     padding:2,
-    flexWrap:'wrap',
-    width:350
+    flexWrap:'wrap'
   }
 });
