@@ -26,7 +26,7 @@ import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity,
     })
     .then((response) => response.json())
     .then((responseJson) => {
-      console.log("responseJson",responseJson.response)
+      // console.log("responseJson",responseJson.response)
       mealCategoryMap = {}
       const convertMealArrayToMap = responseJson.response.map((meal) => {
         if (!mealCategoryMap[meal.date]) {
@@ -37,8 +37,8 @@ import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity,
       return mealCategoryMap
     })
     .then((mealCategoryMap) => {
-      console.log('data source', ds);
-      console.log("mealCategoryMap", mealCategoryMap)
+      // console.log('data source', ds);
+      // console.log("mealCategoryMap", mealCategoryMap)
       this.setState({
         dataSource: ds.cloneWithRowsAndSections(mealCategoryMap)
       });
@@ -63,9 +63,10 @@ import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity,
       .then((response) => response.json())
       .then((responseJson) => {
         // console.log("responseJson",responseJson.response)
+        res(responseJson)
         mealCategoryMap = {}
         const convertMealArrayToMap = responseJson.response.map((meal) => {
-          console.log("responseJson",meal)
+          // console.log("responseJson",meal)
           if (!mealCategoryMap[meal.date]) {
             mealCategoryMap[meal.date] = []
           }
@@ -80,48 +81,11 @@ import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity,
           dataSource: ds.cloneWithRowsAndSections(mealCategoryMap)
         });
       })
-    }
-
-    longTouchMeal(meal) {
-      fetch('https://breadstick.herokuapp.com/api/meals', {
-        method: 'POST',
+      .catch((err)=>{
+        rej(err)
       })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        console.log("toggled")
-      });
-    }
-
-    fetchData() {
-      return new Promise((res,rej)=>{
-        fetch('https://breadstick.herokuapp.com/api/meals', {
-          method: 'GET',
-        })
-        .then((response) => response.json())
-        .then((responseJson) => {
-          res(responseJson)
-          // console.log("responseJson",responseJson.response)
-          mealCategoryMap = {}
-          const convertMealArrayToMap = responseJson.response.map((meal) => {
-            if (!mealCategoryMap[meal.date]) {
-              mealCategoryMap[meal.date] = []
-            }
-            mealCategoryMap[meal.date].push(meal)
-          })
-          return mealCategoryMap
-        })
-        .then((mealCategoryMap) => {
-          // console.log('data source', ds);
-          // console.log("mealCategoryMap", mealCategoryMap)
-          this.setState({
-            dataSource: ds.cloneWithRowsAndSections(mealCategoryMap)
-          });
-        })
-        .catch((err)=>{
-          rej(err)
-        })
-      })
-    }
+    })
+  }
     _onRefresh() {
       this.setState({refreshing: true});
       this.fetchData().then((stuff) => {
@@ -159,9 +123,7 @@ import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity,
                 left: 0,
                 right: 0,
                 bottom: 0,
-              }}
-
-              ></Avatar>
+              }}></Avatar>
             }
             titleContainerStyle={{paddingLeft:9}}
             subtitleContainerStyle={{paddingLeft:9}}
@@ -181,6 +143,8 @@ import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity,
     }
 
     render() {
+      this.fetchData.bind(this)
+      console.log("HEREEEEE", this.state.dataSource)
       const { navigate } = this.props.navigation;
       return (
         <View style={{flex:1}}>
@@ -219,81 +183,45 @@ import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity,
         );
       }
     }
-  }
-  componentDidMount() {
-    const { params } = this.props.navigation.state
-    fetch('https://breadstick.herokuapp.com/api/meals/' + params.meal._id, {
-      method: 'GET',
-    })
-    .then((response) => response.json())
-    .then((responseJson) => {
-      const rsvp = () => {
-        if (responseJson.response.attendees.length ==> 0) {
-          return true
-        }
-      }
-      this.setState({
-        meal: responseJson.response,
-        rsvp: rsvp
-      });
-    });
-  }
-
-  pressRSVP () {
-    const { params } = this.props.navigation.state
-    const { goBack } = this.props.navigation;
-    fetch('https://breadstick.herokuapp.com/api/meals/rsvp/' + params.meal._id + '?userId=596a00721467be0011b3f376', {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json"
-      },
-    })
-    .then((response) => response.json())
-    .then((responseJson) => {
-      console.log("meal created!")
-      this.props.navigation.goBack()
-    })
-    .catch((err) => {
-      console.log("unable to create meal", err)
-    });
-  }
-
-  render() {
-    return (
-      <View>
-        <Text>{this.state.meal.title}</Text>
-        <Text>{this.state.meal.price}</Text>
-        <TouchableOpacity>
-          <Text>{this.state.meal.host}</Text>
-        </TouchableOpacity>
-        <Text>{this.state.meal.description}</Text>
-        <Text>{this.state.meal.time}</Text>
-        <Text>{this.state.meal.location}</Text>
-        <TouchableOpacity onPress={this.pressRSVP.bind(this)}>
-          {this.state.rsvp ? <Text style={{backgroundColor: 'red'}}>Un-RSVP</Text> : <Text style={{backgroundColor: 'green'}}>RSVP</Text>}
-        </TouchableOpacity>
-      </View>
-    );
-  }
-}
 
     class MealScreen extends React.Component {
       constructor(props) {
         super(props)
         this.state = {
-          meal: {}
+          meal: {},
+          rsvp: false,
         }
       }
-      componentWillMount() {
+      componentDidMount() {
         const { params } = this.props.navigation.state
         fetch('https://breadstick.herokuapp.com/api/meals/' + params.meal._id, {
           method: 'GET',
         })
         .then((response) => response.json())
         .then((responseJson) => {
-          this.setState({
-            meal: responseJson.response
-          });
+          const rsvps = responseJson.response.attendees
+          if (rsvps.length > 0) {
+            this.setState({
+              meal: responseJson.response,
+              rsvp: rsvp()
+            });
+          }
+        });
+      }
+
+      pressRSVP () {
+        const { params } = this.props.navigation.state
+        const { goBack } = this.props.navigation;
+        fetch('https://breadstick.herokuapp.com/api/meals/rsvp/' + params.meal._id + '?userId=596a00721467be0011b3f376', {
+          method: 'POST',
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+          console.log("rsvp created!")
+          this.props.navigation.goBack()
+        })
+        .catch((err) => {
+          console.log("unable to create rsvp", err)
         });
       }
 
@@ -308,13 +236,15 @@ import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity,
             <Text>{this.state.meal.description}</Text>
             <Text>{this.state.meal.time}</Text>
             <Text>{this.state.meal.location}</Text>
-            <TouchableOpacity>
-              <Text>RSVP</Text>
+            <TouchableOpacity onPress={this.pressRSVP.bind(this)}>
+              {this.state.rsvp ? <Text style={{backgroundColor: 'red'}}>Un-RSVP</Text> : <Text style={{backgroundColor: 'green'}}>RSVP</Text>}
             </TouchableOpacity>
           </View>
         );
       }
     }
+
+
 
     class CreateMealScreen extends React.Component {
       constructor(props) {
@@ -329,6 +259,7 @@ import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity,
           location: ''
         }
       }
+
 
       createMeal() {
         const {goBack} = this.props.navigation;
