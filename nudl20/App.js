@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity, AsyncStorage } from 'react-native';
-import Swiper from 'react-native-swiper';
 import { StackNavigator } from 'react-navigation';
 // import { } from '@shoutem/ui';
 
@@ -41,7 +40,12 @@ class MealListScreen extends React.Component {
     const { navigate } = this.props.navigation;
     return (
       <View style={styles.container}>
-        <View><Text>SEARCH GOES HERE</Text></View>
+        <View>
+          <Text>SEARCH GOES HERE</Text>
+          <TouchableOpacity onPress={() => navigate('CreateMeal')}>
+            <Text>Host meal</Text>
+          </TouchableOpacity>
+        </View>
         <ListView
           dataSource={this.state.dataSource}
           renderRow={(rowData) => <View>
@@ -74,7 +78,6 @@ class MealScreen extends React.Component {
   }
   componentWillMount() {
     const { params } = this.props.navigation.state
-    console.log(params)
     fetch('https://breadstick.herokuapp.com/api/meals/' + params.meal._id, {
         method: 'GET',
       })
@@ -87,9 +90,8 @@ class MealScreen extends React.Component {
   }
 
   render() {
-    console.log("MEAL", this.state.meal.title)
     return (
-      <View style={styles.container}>
+      <View>
         <Text>{this.state.meal.title}</Text>
         <Text>{this.state.meal.price}</Text>
         <TouchableOpacity>
@@ -109,14 +111,15 @@ class MealScreen extends React.Component {
 class CreateMealScreen extends React.Component {
   constructor(props) {
     super(props)
-    // this.state = {
-    //   title: null,
-    //   description: null,
-    //   date: null,
-    //   time: null,
-    //   price: null,
-    //   capacity: null,
-    // }
+    this.state = {
+      title: '',
+      description: '',
+      date: '',
+      time: '',
+      price: '',
+      capacity: '',
+      location: ''
+    }
   }
 
   createMeal() {
@@ -128,7 +131,8 @@ class CreateMealScreen extends React.Component {
         date: this.state.date,
         time: this.state.time,
         price: this.state.price,
-        capacity: this.state.capacity
+        capacity: this.state.capacity,
+        location: this.state.location
       })
     })
     .then((response) => response.json())
@@ -143,7 +147,7 @@ class CreateMealScreen extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <View>
         <Text>Host a Meal</Text>
         <TextInput
           placeholder="Title"
@@ -166,6 +170,11 @@ class CreateMealScreen extends React.Component {
           onChangeText={(text) => this.setState({time: text})}
         />
         <TextInput
+          placeholder="Location"
+          value={this.state.location}
+          onChangeText={(text) => this.setState({date: location})}
+        />
+        <TextInput
           placeholder="Price"
           value={this.state.price}
           onChangeText={(text) => this.setState({price: text})}
@@ -183,18 +192,6 @@ class CreateMealScreen extends React.Component {
   }
 }
 
-class SwiperScreen extends React.Component {
-  render() {
-    return (
-      <Swiper>
-        <CreateMealScreen navigation={this.props.navigation}/>
-        <MealListScreen navigation={this.props.navigation}/>
-        <MealScreen navigation={this.props.navigation}/>
-      </Swiper>
-    );
-  }
-}
-
 export default StackNavigator({
   MealList: {
     screen: MealListScreen,
@@ -205,9 +202,6 @@ export default StackNavigator({
   CreateMeal: {
     screen: CreateMealScreen,
   },
-  Swiper: {
-    screen: SwiperScreen,
-  }
 }, {initialRouteName: 'MealList'});
 
 const styles = StyleSheet.create({
