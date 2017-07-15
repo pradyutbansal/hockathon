@@ -20,7 +20,6 @@ class MealListScreen extends React.Component {
     })
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log("here2", responseJson.response)
         this.setState({
           dataSource: ds.cloneWithRows(responseJson.response)
         });
@@ -69,10 +68,13 @@ class MealListScreen extends React.Component {
 class MealScreen extends React.Component {
   constructor(props) {
     super(props)
+    this.state = {
+      meal: {}
+    }
   }
   componentWillMount() {
     const { params } = this.props.navigation.state
-    console.log("HIIII",params.meal)
+    console.log(params)
     fetch('https://breadstick.herokuapp.com/api/meals/' + params.meal._id, {
         method: 'GET',
       })
@@ -85,6 +87,7 @@ class MealScreen extends React.Component {
   }
 
   render() {
+    console.log("MEAL", this.state.meal.title)
     return (
       <View style={styles.container}>
         <Text>{this.state.meal.title}</Text>
@@ -94,7 +97,7 @@ class MealScreen extends React.Component {
         </TouchableOpacity>
         <Text>{this.state.meal.description}</Text>
         <Text>{this.state.meal.time}</Text>
-        <Text>{this.state.meal.address}</Text>
+        <Text>{this.state.meal.location}</Text>
         <TouchableOpacity>
           <Text>RSVP</Text>
         </TouchableOpacity>
@@ -131,7 +134,7 @@ class CreateMealScreen extends React.Component {
     .then((response) => response.json())
     .then((responseJson) => {
       console.log("meal created!")
-       this.props.navigation.goBack()
+      //  this.props.navigation.goBack()
     })
     .catch((err) => {
       console.log("unable to create meal")
@@ -184,9 +187,9 @@ class SwiperScreen extends React.Component {
   render() {
     return (
       <Swiper>
-        <CreateMealScreen />
-        <MealListScreen />
-        <MealScreen />
+        <CreateMealScreen navigation={this.props.navigation}/>
+        <MealListScreen navigation={this.props.navigation}/>
+        <MealScreen navigation={this.props.navigation}/>
       </Swiper>
     );
   }
