@@ -216,7 +216,7 @@ class CreateMealScreen extends React.Component {
     .then((response) => response.json())
     .then((responseJson) => {
       console.log("meal created!")
-      this.props.navigation.goBack()
+      //  this.props.navigation.goBack()
     })
     .catch((err) => {
       console.log("unable to create meal")
@@ -249,27 +249,25 @@ class CreateMealScreen extends React.Component {
           <CheckBox
             title='Dairy Free'
           />
+          <CheckBox
+            title='Gluten Free'
+          />
+          <CheckBox
+            title='Vegan'
+          />
+          <CheckBox
+            title='Vegetarian'
+          />
       </View>
-    <View style={styles.checkbox}>
-      <CheckBox
-        title='Gluten Free'
-      />
-      <CheckBox
-        title='Vegan'
-      />
-    </View>
-      <View style={styles.checkbox}>
-        <CheckBox
-          title='Vegetarian'
-        />
-      </View>
+      <View style={{display:'flex', alignItems:'center', justifyContent:'center'}} >
         <TouchableOpacity onPress={this.createMeal.bind(this)}>
           <Image
           source={require('./img/nudl2logo-trans.png')}
-          style={{width:110, height:90,display:'flex', alignItems:'center', justifyContent:'center'}} >
+          style={{width:110, height:90}}>
           <View style={styles.headline}><Text style={{fontSize: 14}}>Sign em up!</Text></View>
         </Image>
         </TouchableOpacity>
+        </View>
       </View>
       </ScrollView>
     );
@@ -321,6 +319,9 @@ const searchStyles = StyleSheet.create({
   },
   checkbox: {
     display: 'flex',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    padding:2,
+    flexWrap:'wrap',
+    width:350
   }
 });
