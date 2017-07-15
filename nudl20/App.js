@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity, AsyncStorage, RefreshControl } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 // import { } from '@shoutem/ui';
-import { List, ListItem} from 'react-native-elements';
+import { List, ListItem, FormLabel, FormInput, CheckBox} from 'react-native-elements';
 const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 // Screens
 class MealListScreen extends React.Component {
@@ -17,133 +17,93 @@ class MealListScreen extends React.Component {
     fetch('https://breadstick.herokuapp.com/api/meals', {
       method: 'GET',
     })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        this.setState({
-          dataSource: ds.cloneWithRows(responseJson.response)
-        });
+    .then((response) => response.json())
+    .then((responseJson) => {
+      this.setState({
+        dataSource: ds.cloneWithRows(responseJson.response)
       });
+    });
   }
 
   longTouchMeal(meal) {
     fetch('https://breadstick.herokuapp.com/api/meals', {
-        method: 'POST',
+      method: 'POST',
+    })
+    .then((response) => response.json())
+    .then((responseJson) => {
+      console.log("toggled")
+    });
+  }
+
+  fetchData() {
+    return new Promise((res,rej)=>{
+      fetch('https://breadstick.herokuapp.com/api/meals', {
+        method: 'GET',
       })
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log("toggled")
-      });
-    }
-
-    fetchData() {
-      return new Promise((res,rej)=>{
-        fetch('https://breadstick.herokuapp.com/api/meals', {
-          method: 'GET',
-        })
-          .then((response) => response.json())
-          .then((responseJson) => {
-            res(responseJson)
-            this.setState({
-              dataSource: ds.cloneWithRows(responseJson.response)
-            });
-          })
-        .catch((err)=>{
-          rej(err)
-        })
+        res(responseJson)
+        this.setState({
+          dataSource: ds.cloneWithRows(responseJson.response)
+        });
       })
-    }
-    _onRefresh() {
-this.setState({refreshing: true});
-this.fetchData().then((stuff) => {
-  this.setState({refreshing: false});
-});
+      .catch((err)=>{
+        rej(err)
+      })
+    })
+  }
+  _onRefresh() {
+    this.setState({refreshing: true});
+    this.fetchData().then((stuff) => {
+      this.setState({refreshing: false});
+    });
+  }
+  renderRow(rowData, sectionID){
+    const { navigate } = this.props.navigation;
+    return (
+      // <TouchableOpacity
+      //   onPress={() => navigate('Meal', {meal: rowData})}
+      //   // onLongPress={this.longTouchMeal.bind(this,rowData)}
+      //   // delayLongPress={2000}
+      // >
+      <ListItem
+        mediumAvatar
+        title = {rowData.title}
+        subtitle = {rowData.host}
+        avatar = {{title:rowData.time}}
+        onPressRightIcon={() => navigate('Meal', {meal: rowData})}
+      />
+      // </TouchableOpacity>
+    )
+  }
+
+  render() {
+    const { navigate } = this.props.navigation;
+    console.log(this.state.mealList)
+    return (
+      <View>
+        <View><Text>SEARCH GOES HERE</Text></View>
+        <TouchableOpacity onPress={() => navigate('CreateMeal')}>
+          <Text>Host meal</Text>
+        </TouchableOpacity>
+        <List>
+          <ListView
+            renderRow = {this.renderRow.bind(this)}
+            dataSource = {this.state.dataSource}
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={this._onRefresh.bind(this)}
+              />
+            }
+          />
+        </List>
+
+      </View>
+    );
+  }
 }
-renderRow(rowData, sectionID){
-  const { navigate } = this.props.navigation;
-  return (
-    // <TouchableOpacity
-    //   onPress={() => navigate('Meal', {meal: rowData})}
-    //   // onLongPress={this.longTouchMeal.bind(this,rowData)}
-    //   // delayLongPress={2000}
-    // >
-    <ListItem
-      mediumAvatar
-      title = {rowData.title}
-      subtitle = {rowData.host}
-      avatar = {{title:rowData.time}}
-      onPressRightIcon={() => navigate('Meal', {meal: rowData})}
-    />
-  // </TouchableOpacity>
-  )
-}
 
-render() {
-const { navigate } = this.props.navigation;
-  console.log(this.state.mealList)
-  return (
-    <View>
-      <View><Text>SEARCH GOES HERE</Text></View>
-      <TouchableOpacity onPress={() => navigate('CreateMeal')}>
-                 <Text>Host meal</Text>
-               </TouchableOpacity>
-      <List>
-        <ListView
-          renderRow = {this.renderRow.bind(this)}
-          dataSource = {this.state.dataSource}
-          refreshControl={
-                    <RefreshControl
-                      refreshing={this.state.refreshing}
-                      onRefresh={this._onRefresh.bind(this)}
-                    />
-                  }
-        />
-      </List>
-
-    </View>
-  );
-}
-}
-
-
-
-  // render() {
-  //   const { navigate } = this.props.navigation;
-  //   return (
-  //     <View style={styles.container}>
-  //       <View>
-  //         <Text>SEARCH GOES HERE</Text>
-  //         <TouchableOpacity onPress={() => navigate('CreateMeal')}>
-  //           <Text>Host meal</Text>
-  //         </TouchableOpacity>
-  //       </View>
-  //       <ListView
-  //         refreshControl={
-  //           <RefreshControl
-  //             refreshing={this.state.refreshing}
-  //             onRefresh={this._onRefresh.bind(this)}
-  //           />
-  //         }
-  //         dataSource={this.state.dataSource}
-  //         renderRow={(rowData) => <View>
-  //           <View><Text>DATE THINGY{rowData.date}</Text></View>
-  //           <TouchableOpacity
-  //             onPress={() => navigate('Meal', {meal: rowData})}
-  //             onLongPress={this.longTouchMeal.bind(this,rowData)}
-  //             delayLongPress={2000}
-  //           >
-  //             <View>
-  //               <Text>{rowData.time}</Text>
-  //               <Text>{rowData.title}</Text>
-  //               <Text>{rowData.host}</Text>
-  //               {rowData.capacity === rowData.numberOfGoing? <Text>Full</Text> : <Text>Not Full</Text>}
-  //             </View>
-  //           </TouchableOpacity>
-  //         </View>}
-  //       />
-  //     </View>
-  //   );
-  // }
-// }
 
 class MealScreen extends React.Component {
   constructor(props) {
@@ -155,14 +115,14 @@ class MealScreen extends React.Component {
   componentWillMount() {
     const { params } = this.props.navigation.state
     fetch('https://breadstick.herokuapp.com/api/meals/' + params.meal._id, {
-        method: 'GET',
-      })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        this.setState({
-          meal: responseJson.response
-        });
+      method: 'GET',
+    })
+    .then((response) => response.json())
+    .then((responseJson) => {
+      this.setState({
+        meal: responseJson.response
       });
+    });
   }
 
   render() {
@@ -225,43 +185,30 @@ class CreateMealScreen extends React.Component {
     return (
       <View>
         <Text>Host a Meal</Text>
-        <TextInput
-          placeholder="Title"
-          value={this.state.title}
-          onChangeText={(text) => this.setState({title: text})}
-        />
-        <TextInput
-          placeholder="Description"
-          value={this.state.description}
-          onChangeText={(text) => this.setState({description: text})}
-        />
-        <TextInput
-          placeholder="Date"
-          value={this.state.date}
-          onChangeText={(text) => this.setState({date: text})}
-        />
-        <TextInput
-          placeholder="Time"
-          value={this.state.time}
-          onChangeText={(text) => this.setState({time: text})}
-        />
-        <TextInput
-          placeholder="Location"
-          value={this.state.location}
-          onChangeText={(text) => this.setState({date: location})}
-        />
-        <TextInput
-          placeholder="Price"
-          value={this.state.price}
-          onChangeText={(text) => this.setState({price: text})}
-        />
-        <TextInput
-          placeholder="Capacity"
-          value={this.state.capacity}
-          onChangeText={(text) => this.setState({capacity: text})}
-        />
+        <FormLabel>Title </FormLabel>
+        <FormInput onChangeText={(text) => this.setState({title: text})} />
+        <FormLabel>Description </FormLabel>
+        <FormInput onChangeText={(text) => this.setState({description: text})} />
+        <FormLabel>Date </FormLabel>
+        <FormInput onChangeText={(text) => this.setState({date: text})} />
+        <FormLabel>Time </FormLabel>
+        <FormInput onChangeText={(text) => this.setState({time: text})} />
+        <FormLabel>Location </FormLabel>
+        <FormInput onChangeText={(text) => this.setState({location: text})} />
+        <FormLabel>Price </FormLabel>
+        <FormInput onChangeText={(text) => this.setState({price: text})} />
+        <FormLabel>Capacity </FormLabel>
+        <FormInput onChangeText={(text) => this.setState({capacity: text})} />
+        <View style={styles.checkbox}>
+          <CheckBox
+            title='Contains Nuts'
+          />
+          <CheckBox
+            title='Dairy Free'
+          />
+        </View>
         <TouchableOpacity onPress={this.createMeal.bind(this)}>
-          <Text>Host Meal</Text>
+          <Text>Sign em up!</Text>
         </TouchableOpacity>
       </View>
     );
@@ -287,4 +234,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  checkbox: {
+    display: 'flex',
+    flexDirection: 'row'
+  }
 });
