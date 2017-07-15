@@ -203,6 +203,9 @@ class CreateMealScreen extends React.Component {
   createMeal() {
     fetch('https://breadstick.herokuapp.com/api/meals/register?hostId=59695b7ff36d28739db80c57', {
       method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
         title: this.state.title,
         description: this.state.description,
