@@ -219,7 +219,7 @@ class CreateMealScreen extends React.Component {
       this.props.navigation.goBack()
     })
     .catch((err) => {
-      console.log("unable to create meal")
+      console.log("unable to create meal", err)
     });
   }
 
