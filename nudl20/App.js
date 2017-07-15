@@ -20,23 +20,29 @@ class MealListScreen extends React.Component {
   }
 
   componentWillMount () {
-    console.log(this.state.datasource)
+    // console.log(this.state.datasource)
     fetch('https://breadstick.herokuapp.com/api/meals', {
       method: 'GET',
     })
     .then((response) => response.json())
     .then((responseJson) => {
+      console.log("responseJson",responseJson.response)
       mealCategoryMap = {}
       const convertMealArrayToMap = responseJson.response.map((meal) => {
         if (!mealCategoryMap[meal.date]) {
           mealCategoryMap[meal.date] = []
         }
-        mealCategoryMap[meal.category].push(meal)
+        mealCategoryMap[meal.date].push(meal)
       })
+      return mealCategoryMap
+    })
+    .then((mealCategoryMap) => {
+      console.log('data source', ds);
+      console.log("mealCategoryMap", mealCategoryMap)
       this.setState({
-        dataSource: ds.cloneWithRowsAndSections(convertMealArrayToMap)
+        dataSource: ds.cloneWithRowsAndSections(mealCategoryMap)
       });
-    });
+    })
   }
 
   longTouchMeal(meal) {
@@ -84,12 +90,18 @@ class MealListScreen extends React.Component {
       <ListItem
         mediumAvatar
         title = {rowData.title}
-        subtitle = {rowData.host}
+        subtitle = {rowData.host.name}
         avatar = {{title:rowData.time}}
         onPressRightIcon={() => navigate('Meal', {meal: rowData})}
       />
     </View>
       // </TouchableOpacity>
+    )
+  }
+
+  renderSectionHeader(sectionData, date) {
+    return (
+      <Text>{date}</Text>
     )
   }
 
@@ -106,6 +118,7 @@ class MealListScreen extends React.Component {
           <ListView
             renderRow = {this.renderRow.bind(this)}
             dataSource = {this.state.dataSource}
+            renderSectionHeader = {this.renderSectionHeader.bind(this)}
             refreshControl={
               <RefreshControl
                 refreshing={this.state.refreshing}
