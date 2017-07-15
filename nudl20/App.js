@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity, AsyncStorage } from 'react-native';
-import Swiper from 'react-native-swiper'
+import Swiper from 'react-native-swiper';
 import { StackNavigator } from 'react-navigation';
-import { Examples } from '@shoutem/ui';
+// import { } from '@shoutem/ui';
 
 // Screens
 class MealListScreen extends React.Component {
@@ -12,22 +12,22 @@ class MealListScreen extends React.Component {
     this.state = {
       dataSource: ds.cloneWithRows([])
     }
+    console.log("this")
+
   }
-  componentDidMount() {
-    fetch('https://breadstick.herokuapp.com/api/meals', {
-        method: 'GET',
-        headers: {
-          "Content-Type": "application/json"
-        },
-      })
+
+  componentWillMount () {
+    fetch('https://breadstick.herokuapp.com/api/meals')
       .then((response) => response.json())
       .then((responseJson) => {
+        console.log(responseJson)
         this.setState({
           dataSource: ds.cloneWithRows(responseJson.meals)
         });
       });
-    }
   }
+
+
 
   longTouchMeal(meal) {
     fetch('https://breadstick.herokuapp.com/api/meals', {
@@ -41,27 +41,28 @@ class MealListScreen extends React.Component {
         console.log("toggled")
       });
     }
-  }
+
 
   render() {
     return (
       <View style={styles.container}>
-        <View>SEARCH GOES HERE</View>
+        <View><Text>SEARCH GOES HERE</Text></View>
         <ListView
-          datasource={this.state.dataSource}
+          dataSource={this.state.dataSource}
           renderRow={(rowData) => <View>
             <View><Text>DATE THINGY{rowData.date}</Text></View>
             <TouchableOpacity
               onPress={() => navigate('Meal', {meal: rowData})}
               onLongPress={this.longTouchMeal.bind(this,rowData)}
               delayLongPress={2000}
+            >
               <View>
                 <Text>{rowData.time}</Text>
                 <Text>{rowData.title}</Text>
                 <Text>{rowData.host}</Text>
                 {rowData.capacity === rowData.numberOfGoing? <Text>Full</Text> : <Text>Not Full</Text>}
               </View>
-            />
+            </TouchableOpacity>
           </View>}
         />
       </View>
@@ -73,20 +74,21 @@ class MealScreen extends React.Component {
   constructor(props) {
     super(props)
   }
-  const { params } = this.props.navigation.state
-  console.log(params.meal)
-  fetch('https://breadstick.herokuapp.com/api/meals/' + params.meal._id, {
-      method: 'GET',
-      headers: {
-        "Content-Type": "application/json"
-      },
-    })
-    .then((response) => response.json())
-    .then((responseJson) => {
-      this.setState({
-        meal: responseJson.meal
+  componentDidMount() {
+    const { params } = this.props.navigation.state
+    console.log(params.meal)
+    fetch('https://breadstick.herokuapp.com/api/meals/' + params.meal._id, {
+        method: 'GET',
+        headers: {
+          "Content-Type": "application/json"
+        },
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({
+          meal: responseJson.meal
+        });
       });
-    });
   }
 
   render() {
