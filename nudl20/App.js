@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity,
   AsyncStorage, RefreshControl, ScrollView, Image } from 'react-native';
   import { StackNavigator } from 'react-navigation';
-  import { List, ListItem, FormLabel, FormInput, CheckBox, Avatar, SearchBar} from 'react-native-elements';
+  import { List, ListItem, FormLabel, FormInput, CheckBox,Button, Avatar, SearchBar} from 'react-native-elements';
 
   const ds = new ListView.DataSource({
     rowHasChanged: (r1, r2) => r1 !== r2,
@@ -138,7 +138,7 @@ import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity,
     renderSectionHeader(sectionData, date) {
       // console.log("DATE", date)
       return (
-        <Text>{date}</Text>
+        <View><Text style={{fontWeight:'bold', color:'#f1c40f'}}>{date} of June</Text></View>
       )
     }
 
@@ -149,19 +149,23 @@ import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity,
       return (
         <View style={{flex:1}}>
           <View style={styles.container}>
-            <Image
-              source={require('./img/nudl2logo-trans.png')}
-              style={{marginLeft:10,width:50,height:48}}
-            /><SearchBar
-              lightTheme
-              round
-              // onChangeText={someMethod}
-              placeholder='Type Here...'
-              // style={{flex:1}}
-            />
-              <TouchableOpacity onPress={() => navigate('CreateMeal')}>
-                <Text>Host meal</Text>
-              </TouchableOpacity>
+            <View style={{flex:1}}>
+              <Image
+                source={require('./img/nudl2logo-trans.png')}
+                style={{marginLeft:10,width:50,height:48, flex:1}}
+              />
+            </View>
+              <View style={{flex:1}}>
+
+              </View>
+                <View style={{flex:1, paddingTop:3}}>
+                  <Button
+                    backgroundColor='#8e44ad'
+                    title='HOST'
+                    onPress={() => navigate('CreateMeal')}
+                  />
+                </View>
+
 
             </View>
             <View style={{flex:11, borderTopWidth:1, borderColor:'#AAAAAA'}}>
@@ -203,7 +207,7 @@ import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity,
           if (rsvps.length > 0) {
             this.setState({
               meal: responseJson.response,
-              rsvp: rsvp()
+              rsvp: true
             });
           }
         });
@@ -367,6 +371,7 @@ import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity,
         flex: 1,
         flexDirection:'row',
         flex:1,
+        alignContent:'stretch',
         backgroundColor: '#d35400',
         height:'100%',
 
