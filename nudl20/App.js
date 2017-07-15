@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity, AsyncStorage } from 'react-native';
+import { StyleSheet, Text, View, ListView, TextInput, TouchableOpacity, AsyncStorage, RefreshControl } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 // import { } from '@shoutem/ui';
 
@@ -35,6 +35,30 @@ class MealListScreen extends React.Component {
       });
     }
 
+    fetchData() {
+      return new Promise((res,rej)=>{
+        fetch('https://breadstick.herokuapp.com/api/meals', {
+          method: 'GET',
+        })
+          .then((response) => response.json())
+          .then((responseJson) => {
+            res(responseJson)
+            this.setState({
+              dataSource: ds.cloneWithRows(responseJson.response)
+            });
+          })
+        .catch((err)=>{
+          rej(err)
+        })
+      })
+    }
+    _onRefresh() {
+this.setState({refreshing: true});
+this.fetchData().then((stuff) => {
+  this.setState({refreshing: false});
+});
+}
+
 
   render() {
     const { navigate } = this.props.navigation;
@@ -47,6 +71,12 @@ class MealListScreen extends React.Component {
           </TouchableOpacity>
         </View>
         <ListView
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh.bind(this)}
+            />
+          }
           dataSource={this.state.dataSource}
           renderRow={(rowData) => <View>
             <View><Text>DATE THINGY{rowData.date}</Text></View>
