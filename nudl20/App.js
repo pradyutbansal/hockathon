@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     flex:1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0)',
+    backgroundColor: 'rgba(0,0,0,0)'
   }
 });
 
@@ -288,7 +288,7 @@ const searchStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#d35400',
     opacity: .7,
-    marginBottom: 10
+    marginBottom: 10,
     // alignItems: 'center',
     // justifyContent: 'center',
   },
